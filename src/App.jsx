@@ -4,6 +4,8 @@ import { dispatchEvent } from './events/eventBus.js';
 import { createNuclearStrikeEvent } from './events/nuclearStrike.js';
 import './events/nuclearStrike.js'; // 핸들러를 eventBus에 등록하기 위한 side-effect import
 import { generateNewsForEvent } from './news/newsGenerator.js';
+import { simulateTick } from './simulation/tick.js';
+import ExplorationView from './exploration/ExplorationView.jsx';
 import './App.css';
 
 // ─────────────────────────────────────────────────────────
@@ -17,6 +19,7 @@ import './App.css';
 // ─────────────────────────────────────────────────────────
 
 export default function App() {
+  const [view, setView] = useState('debug'); // 'debug' | 'exploration'
   const [state, setState] = useState(() => createInitialState());
   const [news, setNews] = useState([]);
 
@@ -32,40 +35,71 @@ export default function App() {
     });
   }, []);
 
+  const handleNextDay = useCallback(() => {
+    setState((prev) => simulateTick(prev));
+  }, []);
+
   return (
     <div className="debug-view">
       <h1>WORLD BOMB WAR — DAY {state.day}</h1>
-      <p className="debug-note">
-        WorldState 모델 검증용 디버그 화면입니다. 실제 탐험 UI는 다음 단계에서 만듭니다.
-      </p>
 
-      <h2>지역 상태</h2>
-      <div className="region-list">
-        {Object.values(state.regions).map((region) => (
-          <div className="region-card" key={region.id}>
-            <strong>
-              {region.name} ({region.country})
-            </strong>
-            <div className="region-stats">
-              인구 {region.population.toLocaleString()} · 경제 {region.economy} · 치안{' '}
-              {region.security} · 방사능 {region.radiationLevel}
-            </div>
-            <button onClick={() => handleStrike(region.id)}>
-              [테스트] NuclearStrikeEvent 발생
-            </button>
-          </div>
-        ))}
+      <div className="view-tabs">
+        <button className={view === 'debug' ? 'active' : ''} onClick={() => setView('debug')}>
+          디버그
+        </button>
+        <button
+          className={view === 'exploration' ? 'active' : ''}
+          onClick={() => setView('exploration')}
+        >
+          탐험 (프로토타입)
+        </button>
       </div>
 
-      <h2>뉴스</h2>
-      <ul className="news-list">
-        {news.length === 0 && <li className="news-empty">아직 뉴스가 없습니다.</li>}
-        {news.map((n) => (
-          <li key={n.id}>
-            DAY {n.day} {n.time} — {n.text}
-          </li>
-        ))}
-      </ul>
+      {view === 'debug' ? (
+        <>
+          <p className="debug-note">
+            WorldState 모델 검증용 디버그 화면입니다. 실제 탐험 UI는 다음 단계에서 만듭니다.
+          </p>
+
+          <button onClick={handleNextDay}>[테스트] 다음 날로 진행</button>
+
+          <h2>지역 상태</h2>
+          <div className="region-list">
+            {Object.values(state.regions).map((region) => (
+              <div className="region-card" key={region.id}>
+                <strong>
+                  {region.name} ({region.country})
+                </strong>
+                <div className="region-stats">
+                  인구 {region.population.toLocaleString()} · 경제 {region.economy} · 치안{' '}
+                  {region.security} · 방사능 {region.radiationLevel}
+                </div>
+                <button onClick={() => handleStrike(region.id)}>
+                  [테스트] NuclearStrikeEvent 발생
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <h2>뉴스</h2>
+          <ul className="news-list">
+            {news.length === 0 && <li className="news-empty">아직 뉴스가 없습니다.</li>}
+            {news.map((n) => (
+              <li key={n.id}>
+                DAY {n.day} {n.time} — {n.text}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <>
+          <p className="debug-note">
+            화살표키로 이동하는 것만 확인하는 프로토타입입니다. 아직 WorldState와 연동되지
+            않았습니다.
+          </p>
+          <ExplorationView />
+        </>
+      )}
     </div>
   );
 }

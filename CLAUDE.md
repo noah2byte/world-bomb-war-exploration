@@ -31,9 +31,9 @@
 
 ---
 
-## 1. 지금까지 진행 상태 (마지막 갱신: 이 파일이 생성된 시점)
+## 1. 지금까지 진행 상태 (마지막 갱신: 2026-09-02)
 
-MVP 로드맵의 **1단계**가 구현되어 있다:
+MVP 로드맵의 **1~3단계**가 구현되어 있다:
 
 - [x] `WorldState` 모델 정의 (`src/world/worldState.js`)
 - [x] 도시 3개 정적 데이터 (Seoul, Tokyo, London — `INITIAL_CITIES`)
@@ -43,11 +43,24 @@ MVP 로드맵의 **1단계**가 구현되어 있다:
 - [x] 위 흐름을 눈으로 확인할 수 있는 디버그 화면 (`src/App.jsx`) —
       도시 카드에서 버튼을 누르면 NuclearStrikeEvent가 발생하고,
       CityState가 바뀌고, 뉴스가 생성되는 것을 실시간으로 볼 수 있다.
+- [x] World Simulation 틱 하나 (`src/simulation/tick.js`) — 파괴 안 된
+      도시의 economy를 매 틱 +1 회복 (`RECOVERY_RATES` 설정 객체 기반,
+      필드 추가만으로 확장 가능). "다음 날로 진행" 버튼으로 확인.
+- [x] 탐험 방향 결정 + 최소 프로토타입: **타일 기반 2D 걷기 RPG로 확정**
+      (Phaser 3 엔진 계열 API 사용 — 실제 설치된 패키지는 최신 메이저
+      버전인 **Phaser 4.2.1**이었고 API가 대체로 호환됐다). 화살표키로
+      걸어다니는 캐릭터 + 카메라 추적만 되는 최소 Scene이
+      `src/exploration/`에 있다 (`ExplorationView.jsx`가 React쪽 마운트
+      래퍼, `scenes/PlaceholderScene.js`가 Phaser Scene). `App.jsx`에
+      "탐험 (프로토타입)" 탭으로 붙어있다. **아직 WorldState와 연동되지
+      않은 순수 프로토타입** — 폐허 표시, 도시별 맵, NPC 등은 전부 다음
+      단계.
 
 **아직 구현 안 됨** (의도적으로 비워둠):
 
-- World Simulation 자동 틱 (`src/simulation/tick.js`는 현재 아무 것도 안 함)
-- 세계지도 / 플레이어 이동 UI
+- 탐험 프로토타입과 WorldState 연동 (파괴된 도시 → 폐허 타일 표시 등)
+- 도시별 실제 타일맵 / 에셋 (지금은 색깔 사각형 placeholder)
+- 세계지도 화면 (도시 간 이동)
 - NPC 대사 시스템 (`src/npc/`는 README만 있음)
 - `src/lore/`, `src/player/` — 폴더와 방향성 메모만 있고 실제 데이터/로직 없음
 - 랜덤 세계 사건, 뉴스 UI, 플레이어 선택지 시스템
@@ -57,8 +70,11 @@ MVP 로드맵의 **1단계**가 구현되어 있다:
 npm install
 npm run dev
 ```
-브라우저에서 도시 카드의 "[테스트] NuclearStrikeEvent 발생" 버튼을 누르면
-인구/경제/치안 등이 즉시 감소하고 하단에 뉴스가 뜨는 것을 확인할 수 있다.
+- "디버그" 탭: 도시 카드의 "[테스트] NuclearStrikeEvent 발생" 버튼을 누르면
+  인구/경제/치안 등이 즉시 감소하고 하단에 뉴스가 뜨는 것을 확인할 수 있다.
+  "[테스트] 다음 날로 진행" 버튼으로 day가 늘고 economy가 서서히 회복되는
+  것도 볼 수 있다.
+- "탐험 (프로토타입)" 탭: 화살표키로 캐릭터를 움직여볼 수 있다.
 
 ---
 
@@ -102,29 +118,39 @@ src/
 ├── world/        # WorldState 모델. 유일한 진실의 원천(source of truth).
 ├── events/        # WorldEvent 정의 + eventBus(레지스트리 패턴).
 │                   새 이벤트 = 이 폴더에 파일 하나 추가.
-├── simulation/     # World Simulation 틱 루프. 지금은 stub.
+├── simulation/     # World Simulation 틱 루프. economy 회복 하나만 구현됨.
 ├── lore/          # 세계관 데이터. 로직 없음. 아직 비어있음(README만 존재).
 ├── news/          # WorldEvent -> NewsArticle 변환 (템플릿 딕셔너리 패턴).
 ├── npc/           # NPC 대사 시스템. 아직 비어있음.
 ├── player/         # 플레이어 이동/인벤토리. 아직 비어있음.
-└── App.jsx         # 현재는 MVP 디버그 뷰. 다음 단계에서 실제 탐험 UI로 교체.
+├── exploration/    # Phaser 기반 타일 걷기 RPG 레이어. React는 마운트만
+│                   담당(ExplorationView.jsx), 게임 로직은 scenes/ 아래
+│                   Phaser Scene 클래스에 있음. 아직 WorldState 미연동
+│                   (순수 프로토타입 — placeholder 타일/캐릭터).
+└── App.jsx         # 현재는 MVP 디버그 뷰 + 탐험 프로토타입 탭. 다음
+                     단계에서 실제 탐험 UI로 교체.
 ```
 
 ## 5. MVP 로드맵 (다음 할 일 순서)
 
 1. ~~WorldState 모델 + 도시 3개 + 콘솔/화면 상태 출력~~ (완료)
 2. ~~WorldEvent 1종(NuclearStrike) 완전 동작~~ (완료)
-3. **World Simulation 틱 하나 추가** — `simulation/tick.js`에 아주 단순한
-   수학 모델 하나만 (예: 파괴되지 않은 도시는 매 틱마다 economy가
-   서서히 +1 회복). 화면에서 "시간을 진행시키는" 버튼/타이머로 확인.
-4. 세계지도 화면 — 도시들을 좌표(cx, cy) 기반으로 지도 위에 배치해서
-   보여주기만 한다 (탐험 없이).
-5. 플레이어 이동 — 지도에서 도시를 클릭하면 `player.location`이 바뀌고,
-   현재 위치한 도시의 상세 정보를 볼 수 있게.
-6. 랜덤 세계 사건 — 틱마다 낮은 확률로 `NuclearStrikeEvent` 같은 이벤트가
+3. ~~World Simulation 틱 하나 추가~~ (완료 — `simulation/tick.js`,
+   파괴 안 된 도시 economy +1/틱)
+4. ~~탐험 방식 결정 + Phaser 프로토타입~~ (완료 — 타일 기반 2D 걷기 RPG로
+   확정, `src/exploration/`에 화살표키 이동 + 카메라 추적만 되는 최소
+   Scene. **아직 WorldState 미연동**)
+5. **도시 타일맵 하나에 WorldState 연동** — Seoul 같은 도시 하나를 대상으로,
+   `city.destroyed`/`radiationLevel` 등이 바뀌면 타일맵에 폐허/파편이
+   실시간으로 반영되게 한다. "RPG 탐험 + WorldState"가 처음 만나는 지점.
+   placeholder 사각형이 아니라 실제 타일 이미지로 바꾸는 것도 이 근처에서
+   같이 다룰 수 있음.
+6. 도시 간 이동 — 세계지도(또는 유사한 선택 화면)에서 다른 도시를 고르면
+   그 도시의 타일맵으로 전환, `player.location` 갱신.
+7. 랜덤 세계 사건 — 틱마다 낮은 확률로 `NuclearStrikeEvent` 같은 이벤트가
    자동 발생하도록.
-7. 뉴스 UI 정리 — 지금은 디버그 리스트 수준이니 실제 "속보" 느낌으로.
-8. NPC 대사 시스템 착수 — `npc/dialogue.js`에
+8. 뉴스 UI 정리 — 지금은 디버그 리스트 수준이니 실제 "속보" 느낌으로.
+9. NPC 대사 시스템 착수 — `npc/dialogue.js`에
    `(npcId, worldState) => string` 함수부터.
 
 각 단계는 반드시 "분석 → 설계 → 구현 → 테스트 → Commit" 사이클로 쪼개서
