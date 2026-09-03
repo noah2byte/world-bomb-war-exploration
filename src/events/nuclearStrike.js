@@ -38,6 +38,7 @@ registerEventHandler('NuclearStrike', (state, event) => {
     stockIndex: Math.max(0, region.stockIndex - 45),
     politicalStability: Math.max(0, region.politicalStability - 35),
     transportationStatus: 'blocked',
+    destroyed: true,
   };
 
   return {

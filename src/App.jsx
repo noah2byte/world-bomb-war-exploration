@@ -94,10 +94,10 @@ export default function App() {
       ) : (
         <>
           <p className="debug-note">
-            화살표키로 이동하는 것만 확인하는 프로토타입입니다. 아직 WorldState와 연동되지
-            않았습니다.
+            Seoul 지역의 destroyed 상태와 연동됩니다. 디버그 탭에서 Seoul에 핵공격을 발생시킨
+            뒤 이 탭으로 돌아오면 맵이 폐허 색상으로 바뀝니다.
           </p>
-          <ExplorationView />
+          <ExplorationView city={state.regions.seoul} />
         </>
       )}
     </div>

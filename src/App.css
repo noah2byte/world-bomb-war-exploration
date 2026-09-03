@@ -32,8 +32,12 @@
 }
 
 .exploration-view {
-  display: inline-block;
-  border: 1px solid #333;
+  /* 디버그 화면의 좁은 720px 컨테이너를 벗어나 화면 전체 너비를 쓴다 */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 75vh;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
   line-height: 0;
 }
 
