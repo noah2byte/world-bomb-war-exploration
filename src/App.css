@@ -1,86 +1,42 @@
-.debug-view {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 32px 24px;
-}
-
-.debug-note {
-  color: #888;
-  font-size: 14px;
-}
-
-.view-tabs {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0 20px;
-}
-
-.view-tabs button {
+.game-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   background: #111;
-  color: #888;
-  border: 1px solid #333;
-  border-radius: 4px;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-family: inherit;
 }
 
-.view-tabs button.active {
-  background: #223;
+.hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #eee;
+  pointer-events: none; /* HUD가 게임 입력을 가로채지 않도록 */
+}
+
+.hud-day {
+  font-weight: bold;
+}
+
+.hud-city {
   color: #9ad;
-  border-color: #556;
+}
+
+.hud-hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: #888;
 }
 
 .exploration-view {
-  /* 디버그 화면의 좁은 720px 컨테이너를 벗어나 화면 전체 너비를 쓴다 */
   width: 100vw;
-  margin-left: calc(50% - 50vw);
-  height: 75vh;
-  border-top: 1px solid #333;
-  border-bottom: 1px solid #333;
+  height: 100vh;
   line-height: 0;
-}
-
-.region-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.region-card {
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 12px 16px;
-  background: #111;
-}
-
-.region-stats {
-  color: #9ad;
-  font-size: 13px;
-  margin: 6px 0 10px;
-}
-
-.region-card button {
-  background: #300;
-  color: #f88;
-  border: 1px solid #833;
-  border-radius: 4px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.region-card button:hover {
-  background: #500;
-}
-
-.news-list {
-  padding-left: 18px;
-  color: #cc0;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.news-empty {
-  color: #555;
 }
